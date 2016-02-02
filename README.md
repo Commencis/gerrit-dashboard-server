@@ -5,7 +5,7 @@ various filters.
 
 ## License
 
-Gerrit Dashboard Server
+Gerrit Dashboard Server  
 Copyright © 2016 Monitise MEA
 
 Distributed under the Apache License, Version 2.0
