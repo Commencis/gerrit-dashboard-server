@@ -16,10 +16,10 @@ Currently the only requirement is node.js itself. Server works with either gerri
 connection. Though API is default, this behaviour can be controlled with `SOURCE_TYPE` environment variable.
 
 * nodejs (>= 0.12)
-* [gerrit] (>= 2.8, optional, for SOURCE_TYPE=API only)
-* [gulp] (optional, for packaging only)
-* [docker] (optional)
-* [mysql] (optional, for SOURCE_TYPE=DB only)
+* gerrit (>= 2.8, optional, for SOURCE_TYPE=API only)
+* gulp (optional, for packaging only)
+* docker (optional)
+* mysql (optional, for SOURCE_TYPE=DB only)
 
 ## Configuration
 
