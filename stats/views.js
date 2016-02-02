@@ -9,6 +9,10 @@ var views = (function () {
         var filter = req.query.filter || filterOptions.DEFAULT_FILTER;
 
         sources.getStats(filter, limit, function (statsData) {
+            statsData.topReviewers = statsData.topReviewers.filter(function (s) {
+                return filterOptions.DISALLOWED_USERS.indexOf(s.name) < 0
+            });
+
             res.json(statsData);
         });
     }
