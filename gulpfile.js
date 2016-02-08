@@ -28,7 +28,8 @@ var distribution = [
     "version/**/*",
     "app.js",
     "package.json",
-    "routes.js"
+    "routes.js",
+    "util/**/*"
 ];
 
 gulp.task("build", function () {

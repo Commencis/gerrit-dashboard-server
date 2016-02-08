@@ -5,6 +5,7 @@ var Connection = require("./Connection");
 var cacheConfig = require("../../config/cache-config");
 var index = require("../../core/index");
 var cache = require("../cache");
+var util = require("../../util/index");
 
 var gerritDB = (function () {
     "use strict";
@@ -162,15 +163,16 @@ var gerritDB = (function () {
     function getTopReviewers (filterOption, callback) {
         var filterDate = getFilterDate(filterOption);
 
-        var query = "SELECT accounts.full_name AS name, count(distinct patch_set_approvals.change_id) AS reviews"
-            + " FROM patch_set_approvals, changes, accounts"
-            + " WHERE patch_set_approvals.change_id = changes.change_id"
-            + " AND patch_set_approvals.account_id != changes.owner_account_id"
-            + " AND patch_set_approvals.account_id = accounts.account_id"
-            + " AND patch_set_approvals.value != 0"
-            + " AND date_format(patch_set_approvals.granted, '%Y-%m-%d') >=" + "'" + filterDate + "'"
-            + " GROUP BY accounts.full_name"
-            + " ORDER BY reviews DESC";
+        var query = "select full_name,"
+            +" dest_project_name,"
+            +" patch_set_approvals.value"
+            +" from patch_set_approvals"
+            +" inner join changes on patch_set_approvals.change_id = changes.change_id"
+            +" inner join accounts on patch_set_approvals.account_id = accounts.account_id"
+            +" where date_format(patch_set_approvals.granted, '%Y-%m-%d') >=" + "'" + filterDate + "'"
+            +" and patch_set_approvals.category_id = 'Code-Review'"
+            +" and changes.owner_account_id != accounts.account_id"
+            +" and full_name != 'Jenkins'";
 
         doQuery(query, function (queryResult) {
             callback(queryResult);
@@ -241,10 +243,66 @@ var gerritDB = (function () {
                     var cacheData = getCacheData(cacheKey);
                     callback(null, cacheData);
                 } else {
-                    getTopReviewers(filter, function (topReviewers) {
-                        setCacheData(cacheKey, topReviewers, cacheTTL);
+                    getTopReviewers(filter, function (rawData) {
+                        var reviewersList = [];
+                        var reviewer, reviewerIndex, projectIndex;
+                        var dataLength = rawData.length;
 
-                        callback(null, topReviewers);
+                        for (var dataIndex = 0; dataIndex < dataLength; dataIndex++) {
+                            reviewer = {};
+
+                            reviewerIndex = util.arrayUtil.findObjectByProperty(reviewersList, "name",
+                                rawData[dataIndex].full_name);
+
+                            if (reviewerIndex == null) {
+                                reviewer.name = rawData[dataIndex].full_name;
+                                reviewer.reviews = 0;
+                                reviewer.projectReviews = [];
+                                reviewer.scores = {"2": 0, "1": 0, "0": 0, "-2": 0, "-1": 0};
+                                reviewer.reviews += 1;
+
+                                projectIndex = util.arrayUtil.findObjectByProperty(reviewer.projectReviews,
+                                    "projectName", rawData[dataIndex].dest_project_name);
+
+                                if (projectIndex == null) {
+                                    reviewer.projectReviews.push({
+                                        "projectName": rawData[dataIndex].dest_project_name,
+                                        "reviewCount": 1
+                                    });
+                                } else {
+                                    reviewer.projectReviews[projectIndex].reviewCount += 1;
+                                }
+
+                                reviewer.scores[rawData[dataIndex].value.toString()] += 1;
+
+                                reviewersList.push(reviewer);
+                            } else {
+                                reviewersList[reviewerIndex].reviews += 1;
+
+                                projectIndex =
+                                    util.arrayUtil.findObjectByProperty(reviewersList[reviewerIndex].projectReviews,
+                                    "projectName", rawData[dataIndex].dest_project_name);
+
+                                if (projectIndex == null) {
+                                    reviewersList[reviewerIndex].projectReviews.push({
+                                        "projectName": rawData[dataIndex].dest_project_name,
+                                        "reviewCount": 1
+                                    });
+                                } else {
+                                    reviewersList[reviewerIndex].projectReviews[projectIndex].reviewCount += 1;
+                                }
+
+                                reviewersList[reviewerIndex].scores[rawData[dataIndex].value.toString()] += 1;
+                            }
+                        }
+
+                        reviewersList.sort(function (a, b) {
+                            return b.reviews - a.reviews;
+                        });
+
+                        setCacheData(cacheKey, reviewersList, cacheTTL);
+
+                        callback(null, reviewersList);
                     });
                 }
             }

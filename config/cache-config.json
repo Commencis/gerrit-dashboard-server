@@ -14,91 +14,91 @@
     "TODAY": {
         "numberOfCommits": {
             "key": "4",
-            "TTL": 1800
+            "TTL": 600
         },
         "mostCommittedProjects": {
             "key": "5",
-            "TTL": 1800
+            "TTL": 600
         },
         "topCommitters": {
             "key": "6",
-            "TTL": 1800
+            "TTL": 600
         },
         "topReviewers": {
             "key": "7",
-            "TTL": 1800
+            "TTL": 600
         }
     },
     "THIS_WEEK": {
         "numberOfCommits": {
             "key": "8",
-            "TTL": 36000
+            "TTL": 3600
         },
         "mostCommittedProjects": {
             "key": "9",
-            "TTL": 36000
+            "TTL": 3600
         },
         "topCommitters": {
             "key": "10",
-            "TTL": 36000
+            "TTL": 3600
         },
         "topReviewers": {
             "key": "11",
-            "TTL": 36000
+            "TTL": 3600
         }
     },
     "THIS_MONTH": {
         "numberOfCommits": {
             "key": "12",
-            "TTL": 86400
+            "TTL": 7200
         },
         "mostCommittedProjects": {
             "key": "13",
-            "TTL": 86400
+            "TTL": 7200
         },
         "topCommitters": {
             "key": "14",
-            "TTL": 86400
+            "TTL": 7200
         },
         "topReviewers": {
             "key": "15",
-            "TTL": 86400
+            "TTL": 7200
         }
     },
     "LAST_30_DAYS": {
         "numberOfCommits": {
             "key": "16",
-            "TTL": 86400
+            "TTL": 7200
         },
         "mostCommittedProjects": {
             "key": "17",
-            "TTL": 86400
+            "TTL": 7200
         },
         "topCommitters": {
             "key": "18",
-            "TTL": 86400
+            "TTL": 7200
         },
         "topReviewers": {
             "key": "19",
-            "TTL": 86400
+            "TTL": 7200
         }
     },
     "LAST_6_MONTHS": {
         "numberOfCommits": {
             "key": "20",
-            "TTL": 432000
+            "TTL": 86400
         },
         "mostCommittedProjects": {
             "key": "21",
-            "TTL": 432000
+            "TTL": 86400
         },
         "topCommitters": {
             "key": "22",
-            "TTL": 432000
+            "TTL": 86400
         },
         "topReviewers": {
             "key": "23",
-            "TTL": 432000
+            "TTL": 86400
         }
     }
 }
