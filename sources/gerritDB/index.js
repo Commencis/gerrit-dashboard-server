@@ -22,7 +22,7 @@ var gerritDB = (function () {
         "DRAFT": "d"
     };
 
-    function doQuery(query, callback) {
+    function doQuery (query, callback) {
         var connection = Connection.connect();
 
         connection.query(query, function (err, rows, fields) {
@@ -36,7 +36,7 @@ var gerritDB = (function () {
         });
     }
 
-    function getTotalNumberOfProjects(callback) {
+    function getTotalNumberOfProjects (callback) {
         var query = "SELECT COUNT(DISTINCT dest_project_name) AS count"
             + " FROM changes";
 
@@ -45,7 +45,7 @@ var gerritDB = (function () {
         });
     }
 
-    function getNumberOfReviews(callback) {
+    function getNumberOfReviews (callback) {
         var numberOfReviews = {
             "open": null,
             "merged": null,
@@ -83,7 +83,7 @@ var gerritDB = (function () {
         })
     }
 
-    function getNumberOfCommits(filterOptions, callback) {
+    function getNumberOfCommits (filterOptions, callback) {
         var filterDate = getFilterDate(filterOptions);
 
         var query = "SELECT COUNT(change_key) AS numberOfCommits"
@@ -96,7 +96,7 @@ var gerritDB = (function () {
         })
     }
 
-    function getMostCommittedProjects(filterOption, callback) {
+    function getMostCommittedProjects (filterOption, callback) {
         var mostCommittedProjectsList = null;
         var filterDate = getFilterDate(filterOption);
 
@@ -114,7 +114,7 @@ var gerritDB = (function () {
         })
     }
 
-    function getTopCommitters(filterOption, callback) {
+    function getTopCommitters (filterOption, callback) {
         var filterDate = getFilterDate(filterOption);
 
         var query = "SELECT full_name AS name, COUNT(change_key) AS commits"
@@ -130,7 +130,7 @@ var gerritDB = (function () {
         })
     }
 
-    function getAverageReviewInterval(callback) {
+    function getAverageReviewInterval (callback) {
         var query = "SELECT created_on AS createdDate, last_updated_on AS updatedDate"
             + " FROM gerrit.changes"
             + " WHERE status = " + "'" + changeStatus.MERGED + "'";
@@ -160,7 +160,7 @@ var gerritDB = (function () {
         })
     }
 
-    function getTopReviewers(filterOption, callback) {
+    function getTopReviewers (filterOption, callback) {
         var filterDate = getFilterDate(filterOption);
 
         var query = "select full_name,"
@@ -179,24 +179,32 @@ var gerritDB = (function () {
         })
     }
 
-    function getAverageMergeDurationByProject(filterOption, callback) {
+    function getAverageMergeDurationByProject (filterOption, callback) {
         var query = "SELECT Project, AVG(MergeProcessTime) AvgMergeDuration FROM ("
             + " SELECT RealDiff,WorkingDayDiff,ChangeID, Project, CreatedTime, MergeTime, "
-            + " CASE WorkingDayDiff WHEN 0 THEN MergeTime ELSE DATE_SUB(MergeTime ,INTERVAL (((RealDiff-WorkingDayDiff)*24 +(WorkingDayDiff *14)))HOUR) END calculatedMergeTime,"
-            + " TIMESTAMPDIFF(SECOND,CreatedTime, CASE WorkingDayDiff WHEN 0 THEN MergeTime ELSE DATE_SUB(MergeTime, INTERVAL (((RealDiff-WorkingDayDiff)*24 + (WorkingDayDiff*14)))HOUR) END) / 60 MergeProcessTime"
+            + " CASE WorkingDayDiff WHEN 0 THEN MergeTime ELSE DATE_SUB(MergeTime ,INTERVAL "
+            + " (((RealDiff-WorkingDayDiff)*24 +(WorkingDayDiff *14)))HOUR) END calculatedMergeTime,"
+            + " TIMESTAMPDIFF(SECOND,CreatedTime, CASE WorkingDayDiff WHEN 0 THEN MergeTime ELSE DATE_SUB(MergeTime, "
+            + " INTERVAL (((RealDiff-WorkingDayDiff)*24 + (WorkingDayDiff*14)))HOUR) END) / 60 MergeProcessTime"
             + " FROM ("
-            + " SELECT DATEDIFF(MAX(Changes.last_updated_on),FirstUploadOfPatch.createdTime) RealDiff,dest_project_name Project,"
-            + " ABS(5 * (DATEDIFF(FirstUploadOfPatch.createdTime, MAX(Changes.last_updated_on)) DIV 7) + MID('0123444401233334012222340111123400012345001234550', 7 * WEEKDAY(FirstUploadOfPatch.createdTime) + WEEKDAY(MAX(Changes.last_updated_on)) + 1, 1))  WorkingDayDiff,"
-            + " FirstUploadOfPatch.change_id ChangeID, FirstUploadOfPatch.patch_set_id, MAX(Changes.last_updated_on) MergeTime,FirstUploadOfPatch.createdTime CreatedTime"
+            + " SELECT DATEDIFF(MAX(Changes.last_updated_on),FirstUploadOfPatch.createdTime) RealDiff,"
+            + " dest_project_name Project,"
+            + " ABS(5 * (DATEDIFF(FirstUploadOfPatch.createdTime, MAX(Changes.last_updated_on)) DIV 7) + "
+            + " MID('0123444401233334012222340111123400012345001234550', 7 * WEEKDAY(FirstUploadOfPatch.createdTime) +"
+            + " WEEKDAY(MAX(Changes.last_updated_on)) + 1, 1))  WorkingDayDiff,"
+            + " FirstUploadOfPatch.change_id ChangeID, FirstUploadOfPatch.patch_set_id, MAX(Changes.last_updated_on) "
+            + " MergeTime,FirstUploadOfPatch.createdTime CreatedTime"
             + " FROM gerrit.change_messages Message"
             + " INNER JOIN gerrit.changes Changes ON Changes.change_id = Message.change_id"
-            + " INNER JOIN (SELECT patches.change_id,patch_set_id,uploader_account_id account_id, MIN(patches.created_on) AS createdTime FROM gerrit.patch_sets patches"
+            + " INNER JOIN (SELECT patches.change_id,patch_set_id,uploader_account_id account_id, "
+            + " MIN(patches.created_on) AS createdTime FROM gerrit.patch_sets patches"
             + " INNER JOIN gerrit.changes changes ON changes.change_id=patches.change_id AND changes.status='M'"
             + " GROUP BY patches.change_id,patch_set_id,uploader_account_id"
             + ") AS FirstUploadOfPatch ON"
             + " FirstUploadOfPatch.change_id = Message.patchset_change_id AND"
             + " FirstUploadOfPatch.patch_set_id = Message.patchset_patch_set_id AND FirstUploadOfPatch.patch_set_id =1"
-            + " WHERE Message.author_id <> 32 /* 32 is Jenkins account id. Should be changed according to your configurations*/ AND FirstUploadOfPatch.account_id <> Message.author_id"
+            + " WHERE Message.author_id <> 32 /* 32 is Jenkins account id. Should be changed according to your "
+            + "configurations*/ AND FirstUploadOfPatch.account_id <> Message.author_id"
             + " GROUP BY FirstUploadOfPatch.change_id,FirstUploadOfPatch.patch_set_id"
             + " ) AS MergeStatisticsView ) ProjectMerge"
             + " WHERE Project NOT LIKE '%Onboarding%'"
@@ -207,44 +215,52 @@ var gerritDB = (function () {
         })
     }
 
-    function getAverageFirstReviewDurationByProject(filterOption, callback) {
+    function getAverageFirstReviewDurationByProject (filterOption, callback) {
         var query ="SELECT Project, AVG(FirstReviewTime) AvgFirstReviewDuration FROM ("
             + " SELECT RealDiff,WorkingDayDiff,ChangeID, Project, CreatedTime,"
-            + " CASE WorkingDayDiff WHEN 0 THEN FirstReviewTime ELSE DATE_SUB(FirstReviewTime ,INTERVAL (((RealDiff-WorkingDayDiff)*24 +(WorkingDayDiff *14)))HOUR) END calculatedFirstReviewTime,"
-            + " TIMESTAMPDIFF(SECOND,CreatedTime, CASE WorkingDayDiff WHEN 0 THEN FirstReviewTime ELSE DATE_SUB(FirstReviewTime, INTERVAL (((RealDiff-WorkingDayDiff)*24 +(WorkingDayDiff*14)))HOUR) END) / 60 FirstReviewTime"
+            + " CASE WorkingDayDiff WHEN 0 THEN FirstReviewTime ELSE DATE_SUB(FirstReviewTime , "
+            + " INTERVAL (((RealDiff-WorkingDayDiff)*24 +(WorkingDayDiff *14)))HOUR) END calculatedFirstReviewTime,"
+            + " TIMESTAMPDIFF(SECOND,CreatedTime, CASE WorkingDayDiff WHEN 0 THEN FirstReviewTime ELSE "
+            + " DATE_SUB(FirstReviewTime, INTERVAL (((RealDiff-WorkingDayDiff)*24 +(WorkingDayDiff*14)))HOUR) END) / 60"
+            + " FirstReviewTime"
             + " FROM ("
-            + " SELECT DATEDIFF(MIN(Message.written_on),FirstUploadOfPatch.createdTime) RealDiff, dest_project_name Project,"
-            + " ABS(5 * (DATEDIFF(FirstUploadOfPatch.createdTime, MIN(Message.written_on)) DIV 7) + MID('0123444401233334012222340111123400012345001234550', 7 * WEEKDAY(FirstUploadOfPatch.createdTime) + WEEKDAY(MIN(Message.written_on)) + 1, 1))  WorkingDayDiff"
-            + " ,FirstUploadOfPatch.change_id ChangeID, FirstUploadOfPatch.patch_set_id, FirstUploadOfPatch.createdTime CreatedTime,MIN(Message.written_on) FirstReviewTime"
+            + " SELECT DATEDIFF(MIN(Message.written_on),FirstUploadOfPatch.createdTime) RealDiff, "
+            + " dest_project_name Project,"
+            + " ABS(5 * (DATEDIFF(FirstUploadOfPatch.createdTime, MIN(Message.written_on)) DIV 7) + "
+            + " MID('0123444401233334012222340111123400012345001234550', 7 * WEEKDAY(FirstUploadOfPatch.createdTime) + "
+            + " WEEKDAY(MIN(Message.written_on)) + 1, 1))  WorkingDayDiff"
+            + " ,FirstUploadOfPatch.change_id ChangeID, FirstUploadOfPatch.patch_set_id, FirstUploadOfPatch.createdTime"
+            + " CreatedTime,MIN(Message.written_on) FirstReviewTime"
             + " FROM gerrit.change_messages Message"
             + " INNER JOIN gerrit.changes Changes ON Changes.change_id = Message.change_id"
-            + " INNER JOIN (SELECT patches.change_id,patch_set_id,uploader_account_id account_id, MIN(patches.created_on) AS createdTime"
+            + " INNER JOIN (SELECT patches.change_id,patch_set_id,uploader_account_id account_id, "
+            + " MIN(patches.created_on) AS createdTime"
             + " FROM gerrit.patch_sets patches"
             + " INNER JOIN gerrit.changes changes ON changes.change_id=patches.change_id"
             + " GROUP BY patches.change_id,patch_set_id,uploader_account_id"
             + " ) AS FirstUploadOfPatch ON"
             + " FirstUploadOfPatch.change_id = Message.patchset_change_id AND"
             + " FirstUploadOfPatch.patch_set_id = Message.patchset_patch_set_id"
-            + " WHERE Message.author_id <> 32 /* 32 is Jenkins account id. Should be changed according to your configurations*/ AND FirstUploadOfPatch.account_id <> Message.author_id"
+            + " WHERE Message.author_id <> 32 /* 32 is Jenkins account id. Should be changed according to your "
+            + "configurations*/ AND FirstUploadOfPatch.account_id <> Message.author_id"
             + " GROUP BY FirstUploadOfPatch.change_id,FirstUploadOfPatch.patch_set_id"
             + " ORDER BY FirstUploadOfPatch.change_id,FirstUploadOfPatch.patch_set_id"
             + " ) AS FirstReviewActionTimeView ) ProjectReview"
             + " WHERE Project NOT LIKE '%Onboarding%'"
             + " GROUP BY Project;"
 
-
         doQuery(query, function (queryResult) {
             callback(queryResult);
         })
     }
 
-    function getStats(filter, limit, callback) {
+    function getStats (filter, limit, callback) {
         var numberOfCommits = null;
         var mostCommittedProjects = null;
         var topCommitters = null;
         var topReviewers = null;
-        var averageMergeDurationByProject = null;
-        var averageFirstReviewDurationByProject = null;
+        var avgMergeDurationByProject = null;
+        var avgFirstReviewDurationByProject = null;
 
         async.parallel({
             "getAverageMergeDurationByProject": function (callback) {
@@ -391,16 +407,16 @@ var gerritDB = (function () {
                     mostCommittedProjects = results.getMostCommittedProjects.splice(0, limit);
                     topCommitters = results.getTopCommitters.splice(0, limit);
                     topReviewers = results.getTopReviewers.splice(0, limit);
-                    averageMergeDurationByProject = results.getAverageMergeDurationByProject.slice(0, limit);
-                    averageFirstReviewDurationByProject = results.getAverageFirstReviewDurationByProject.slice(0, limit);
+                    avgMergeDurationByProject = results.getAverageMergeDurationByProject.slice(0, limit);
+                    avgFirstReviewDurationByProject = results.getAverageFirstReviewDurationByProject.slice(0, limit);
 
                 } else {
                     numberOfCommits = results.getNumberOfCommits;
                     mostCommittedProjects = results.getMostCommittedProjects;
                     topCommitters = results.getTopCommitters;
                     topReviewers = results.getTopReviewers;
-                    averageMergeDurationByProject = results.getAverageMergeDurationByProject;
-                    averageFirstReviewDurationByProject = results.getAverageFirstReviewDurationByProject;
+                    avgMergeDurationByProject = results.getAverageMergeDurationByProject;
+                    avgFirstReviewDurationByProject = results.getAverageFirstReviewDurationByProject;
                 }
 
                 var jsonData = {
@@ -417,7 +433,7 @@ var gerritDB = (function () {
         });
     }
 
-    function getDashboard(callback) {
+    function getDashboard (callback) {
         async.parallel({
             "getNumberOfReviews": function (callback) {
                 var cacheKey = cacheConfig.numberOfReviews.key;
