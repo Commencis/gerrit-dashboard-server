@@ -5,7 +5,7 @@ various filters.
 
 ## License
 
-Gerrit Dashboard Server  
+Gerrit Dashboard Server
 Copyright © 2016 Monitise MEA
 
 Distributed under the Apache License, Version 2.0
@@ -13,7 +13,7 @@ Distributed under the Apache License, Version 2.0
 ## Requirements
 
 Currently the only requirement is node.js itself. Server works with either gerrit's API or with direct DB
-connection. Though API is default, this behaviour can be controlled with `SOURCE_TYPE` environment variable.
+connection. Though DB is default, this behaviour can be controlled with `SOURCE_TYPE` environment variable.
 
 * nodejs (>= 0.12)
 * gerrit (>= 2.8, optional, for SOURCE_TYPE=API only)

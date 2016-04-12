@@ -3,7 +3,7 @@ var sourceTypes = require("./types");
 var source = (function () {
     "use strict";
 
-    var sourceType = process.env.SOURCE_TYPE || sourceTypes.API;
+    var sourceType = process.env.SOURCE_TYPE || sourceTypes.DB;
     var source = null;
 
     if (sourceType === sourceTypes.API) {

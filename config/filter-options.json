@@ -1,5 +1,6 @@
 {
     "DEFAULT_LIMIT": null,
     "DEFAULT_FILTER": "TODAY",
-    "DISALLOWED_USERS": ["Jenkins"]
+    "DISALLOWED_USERNAMES": ["Jenkins"],
+    "DISALLOWED_USERIDS": [32]
 }
