@@ -189,14 +189,14 @@ var gerritDB = (function () {
         })
     }
 
-    /**
+    /*
      * Generated view that named PatchSet is responsible for getting creation time of each patchset.
      * MergeStatisticsView is responsible for finding the merge time related to patch.
      * Mathematical functions that used for calculating to best matching time duration between creation time
      * and first action time.
      *
      * TODO: Onboarding and other possible disallowed projects should be configurable.
-     **/
+     */
     function getAverageMergeDurationByProject (filterOption, callback) {
         var query =
             `SELECT Project, AVG(MergeProcessTime) AvgMergeDuration FROM (
@@ -242,7 +242,7 @@ var gerritDB = (function () {
         })
     }
 
-    /**
+    /*
      * Generated view that named PatchSet is responsible for getting creation time of each patchset.
      * FirstReviewActionTimeView is responsible for finding the first review/comment time related to patch from
      * other reviewers(accounts except patchset owner and Jenkins accounts).
@@ -250,7 +250,7 @@ var gerritDB = (function () {
      * and first action time.
      *
      * TODO: Onboarding and other possible disallowed projects should be configurable.
-     **/
+     */
     function getAverageFirstReviewDurationByProject (filterOption, callback) {
         var query =
             `SELECT Project, AVG(FirstReviewTime) AvgFirstReviewDuration FROM (

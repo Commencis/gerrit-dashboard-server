@@ -1,7 +1,16 @@
 {
   "name": "GerritDashboard-Server",
+  "description": "An API that serves different metrics using either direct Gerrit DB access or Gerrit's API",
+  "keywords": ["gerrit", "api", "database", "dashboard", "server", "code review", "stats", "metrics"],
   "version": "1.0.0",
-  "private": true,
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/monitise-mea/gerrit-dashboard-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/monitise-mea/gerrit-dashboard-server/issues"
+  },
   "scripts": {
     "start": "node ./bin/www"
   },
@@ -11,22 +20,20 @@
     "cookie-parser": "~1.3.5",
     "cors": "^2.7.1",
     "debug": "^2.2.0",
+    "del": "^2.0.2",
+    "eslint": "^1.5.0",
     "express": "~4.13.1",
+    "gulp": "^3.9.1",
+    "gulp-eslint": "^2.0.0",
     "http-digest-client": "0.0.3",
+    "karma": "^0.13.9",
     "moment": "^2.10.6",
+    "morgan": "^1.6.1",
     "mysql": "^2.9.0",
     "node-async": "0.0.1",
     "node-cache": "^3.0.0",
     "path": "^0.11.14",
     "request": "^2.62.0",
     "serve-favicon": "~2.3.0"
-  },
-  "devDependencies": {
-    "del": "^2.0.2",
-    "eslint": "^1.5.0",
-    "gulp": "^3.9.0",
-    "gulp-eslint": "^1.0.0",
-    "karma": "^0.13.9",
-    "morgan": "^1.6.1"
   }
 }

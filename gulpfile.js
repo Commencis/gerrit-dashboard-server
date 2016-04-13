@@ -6,6 +6,7 @@ gulp.task("lint", function () {
     return gulp.src(
         [
             "**/*.js",
+            "!dist/**/*",
             "!node_modules/**/*"
         ])
         .pipe(eslint())
@@ -32,8 +33,10 @@ var distribution = [
     "util/**/*"
 ];
 
-gulp.task("build", function () {
+gulp.task("build", ["clean"], function () {
     return gulp
         .src(distribution, {"base": "./"})
         .pipe(gulp.dest("dist"));
 });
+
+gulp.task("default", ["lint", "build"]);
