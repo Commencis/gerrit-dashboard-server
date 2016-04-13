@@ -11,6 +11,14 @@
         "key": "3",
         "TTL": 86400
     },
+    "getAverageMergeDurationByProject": {
+        "key": "24",
+        "TTL": 86400
+    },
+    "getAverageFirstReviewDurationByProject": {
+        "key": "25",
+        "TTL": 86400
+    },
     "TODAY": {
         "numberOfCommits": {
             "key": "4",

@@ -9,8 +9,9 @@ var views = (function () {
         var filter = req.query.filter || filterOptions.DEFAULT_FILTER;
 
         sources.getStats(filter, limit, function (statsData) {
+            // excluding disallowed users from top reviewers
             statsData.topReviewers = statsData.topReviewers.filter(function (s) {
-                return filterOptions.DISALLOWED_USERS.indexOf(s.name) < 0
+                return filterOptions.DISALLOWED_USERNAMES.indexOf(s.name) < 0
             });
 
             res.json(statsData);
