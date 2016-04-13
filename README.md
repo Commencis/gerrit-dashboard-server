@@ -1,5 +1,7 @@
 # Gerrit Dashboard Server
 
+![Travis CI Build Status](https://api.travis-ci.org/tunix/gerrit-dashboard-server.svg)
+
 Gerrit Dashboard Server project that aggregates & serves metrics about the projects, reviews and commits with
 various filters.
 
