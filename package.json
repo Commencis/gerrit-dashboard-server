@@ -1,7 +1,16 @@
 {
   "name": "GerritDashboard-Server",
   "description": "An API that serves different metrics using either direct Gerrit DB access or Gerrit's API",
-  "keywords": ["gerrit", "api", "database", "dashboard", "server", "code review", "stats", "metrics"],
+  "keywords": [
+    "gerrit",
+    "api",
+    "database",
+    "dashboard",
+    "server",
+    "code review",
+    "stats",
+    "metrics"
+  ],
   "version": "1.0.0",
   "license": "Apache-2.0",
   "repository": {
@@ -25,6 +34,7 @@
     "express": "~4.13.1",
     "gulp": "^3.9.1",
     "gulp-eslint": "^2.0.0",
+    "gulp-shell": "^0.5.2",
     "http-digest-client": "0.0.3",
     "karma": "^0.13.9",
     "moment": "^2.10.6",

@@ -1,6 +1,8 @@
 var gulp = require("gulp");
 var eslint = require("gulp-eslint");
 var del = require("del");
+var shell = require("gulp-shell");
+var pkg = require("./package");
 
 gulp.task("lint", function () {
     return gulp.src(
@@ -37,6 +39,36 @@ gulp.task("build", ["clean"], function () {
     return gulp
         .src(distribution, {"base": "./"})
         .pipe(gulp.dest("dist"));
+});
+
+gulp.task("docker", ["lint", "build"], function () {
+    var email = process.env.DOCKER_EMAIL;
+    var username = process.env.DOCKER_USERNAME;
+    var password = process.env.DOCKER_PASSWORD;
+    var imageName = process.env.DOCKER_IMAGE_NAME || "gerritdashboard-server";
+    var version = pkg.version;
+
+    if (!email) {
+        throw new Error("DOCKER_EMAIL undefined!");
+    }
+
+    if (!username) {
+        throw new Error("DOCKER_USERNAME undefined!");
+    }
+
+    if (!password) {
+        throw new Error("DOCKER_PASSWORD undefined!");
+    }
+
+    return shell.task([
+        `docker build -t ${imageName}:${version} .`,
+        `docker tag ${imageName}:${version} ${imageName}:latest`,
+        `docker login -e="${email}" -u="${username}" -p="${password}"`
+        `docker push ${imageName}:${version}`,
+        `docker push ${imageName}:latest`,
+    ], {
+        "verbose": true
+    })();
 });
 
 gulp.task("default", ["lint", "build"]);
