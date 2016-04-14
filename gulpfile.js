@@ -63,7 +63,7 @@ gulp.task("docker", ["lint", "build"], function () {
     return shell.task([
         `docker build -t ${imageName}:${version} .`,
         `docker tag ${imageName}:${version} ${imageName}:latest`,
-        `docker login -e="${email}" -u="${username}" -p="${password}"`
+        `docker login -e="${email}" -u="${username}" -p="${password}"`,
         `docker push ${imageName}:${version}`,
         `docker push ${imageName}:latest`,
     ], {
