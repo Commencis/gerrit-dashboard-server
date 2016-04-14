@@ -7,5 +7,5 @@ sudo: required
 services:
     - docker
 script:
-    - '[ "${TRAVIS_PULL_REQUEST}" != "false" ] && gulp || false'
-    - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && gulp docker || false'
+    - '[ "${TRAVIS_PULL_REQUEST}" != "false" ] && gulp || true'
+    - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && gulp docker || true'
