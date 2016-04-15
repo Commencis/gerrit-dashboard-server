@@ -17,7 +17,7 @@ gulp.task("lint", function () {
 });
 
 gulp.task("clean", function () {
-    return del("dist");
+    return del.sync("dist");
 });
 
 var distribution = [
@@ -41,7 +41,7 @@ gulp.task("build", ["clean"], function () {
         .pipe(gulp.dest("dist"));
 });
 
-gulp.task("docker", ["lint", "build"], function () {
+gulp.task("docker", function () {
     var email = process.env.DOCKER_EMAIL;
     var username = process.env.DOCKER_USERNAME;
     var password = process.env.DOCKER_PASSWORD;
@@ -66,9 +66,7 @@ gulp.task("docker", ["lint", "build"], function () {
         `docker login -e="${email}" -u="${username}" -p="${password}"`,
         `docker push ${imageName}:${version}`,
         `docker push ${imageName}:latest`,
-    ], {
-        "verbose": true
-    })();
+    ])();
 });
 
 gulp.task("default", ["lint", "build"]);
