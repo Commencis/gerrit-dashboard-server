@@ -11,14 +11,6 @@
         "key": "3",
         "TTL": 86400
     },
-    "getAverageMergeDurationByProject": {
-        "key": "24",
-        "TTL": 86400
-    },
-    "getAverageFirstReviewDurationByProject": {
-        "key": "25",
-        "TTL": 86400
-    },
     "TODAY": {
         "numberOfCommits": {
             "key": "4",
@@ -35,6 +27,14 @@
         "topReviewers": {
             "key": "7",
             "TTL": 600
+        },
+        "getAverageMergeDurationByProject": {
+            "key": "24",
+            "TTL": 86400
+        },
+        "getAverageFirstReviewDurationByProject": {
+            "key": "25",
+            "TTL": 86400
         }
     },
     "THIS_WEEK": {
@@ -53,6 +53,14 @@
         "topReviewers": {
             "key": "11",
             "TTL": 3600
+        },
+        "getAverageMergeDurationByProject": {
+            "key": "26",
+            "TTL": 86400
+        },
+        "getAverageFirstReviewDurationByProject": {
+            "key": "27",
+            "TTL": 86400
         }
     },
     "THIS_MONTH": {
@@ -71,6 +79,14 @@
         "topReviewers": {
             "key": "15",
             "TTL": 7200
+        },
+        "getAverageMergeDurationByProject": {
+            "key": "28",
+            "TTL": 86400
+        },
+        "getAverageFirstReviewDurationByProject": {
+            "key": "29",
+            "TTL": 86400
         }
     },
     "LAST_30_DAYS": {
@@ -89,6 +105,14 @@
         "topReviewers": {
             "key": "19",
             "TTL": 7200
+        },
+        "getAverageMergeDurationByProject": {
+            "key": "30",
+            "TTL": 86400
+        },
+        "getAverageFirstReviewDurationByProject": {
+            "key": "31",
+            "TTL": 86400
         }
     },
     "LAST_6_MONTHS": {
@@ -106,6 +130,14 @@
         },
         "topReviewers": {
             "key": "23",
+            "TTL": 86400
+        },
+        "getAverageMergeDurationByProject": {
+            "key": "32",
+            "TTL": 86400
+        },
+        "getAverageFirstReviewDurationByProject": {
+            "key": "33",
             "TTL": 86400
         }
     }
