@@ -198,6 +198,7 @@ var gerritDB = (function () {
      * TODO: Onboarding and other possible disallowed projects should be configurable.
      */
     function getAverageMergeDurationByProject (filterOption, callback) {
+        var filterDate = getFilterDate(filterOption);
         var query =
             `SELECT Project, AVG(MergeProcessTime) AvgMergeDuration FROM (
                 SELECT RealDiff,WorkingDayDiff,ChangeID, Project, CreatedTime, MergeTime,
@@ -227,6 +228,7 @@ var gerritDB = (function () {
                                    MIN(patches.created_on) AS createdTime
                                FROM gerrit.patch_sets patches
                                    INNER JOIN changes ON changes.change_id=patches.change_id AND changes.status='M'
+                               WHERE DATE_FORMAT(patches.created_on, '%Y-%m-%d') >= '${filterDate}'
                                GROUP BY patches.change_id,patch_set_id,uploader_account_id
                            ) AS PatchSet ON PatchSet.change_id = Message.patchset_change_id AND
                        PatchSet.patch_set_id = Message.patchset_patch_set_id AND PatchSet.patch_set_id =1
@@ -252,6 +254,7 @@ var gerritDB = (function () {
      * TODO: Onboarding and other possible disallowed projects should be configurable.
      */
     function getAverageFirstReviewDurationByProject (filterOption, callback) {
+        var filterDate = getFilterDate(filterOption);
         var query =
             `SELECT Project, AVG(FirstReviewTime) AvgFirstReviewDuration FROM (
                 SELECT RealDiff,WorkingDayDiff,ChangeID, Project, CreatedTime,
@@ -282,6 +285,7 @@ var gerritDB = (function () {
                                     MIN(patches.created_on) AS createdTime
                                 FROM gerrit.patch_sets patches
                                     INNER JOIN gerrit.changes changes ON changes.change_id=patches.change_id
+                                WHERE DATE_FORMAT(patches.created_on, '%Y-%m-%d') >= '${filterDate}'
                                 GROUP BY patches.change_id,patch_set_id,uploader_account_id
                             ) AS PatchSet ON PatchSet.change_id = Message.patchset_change_id AND
                         PatchSet.patch_set_id = Message.patchset_patch_set_id
