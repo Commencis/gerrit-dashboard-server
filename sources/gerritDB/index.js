@@ -312,8 +312,8 @@ var gerritDB = (function () {
 
         async.parallel({
             "getAverageMergeDurationByProject": function (callback) {
-                var cacheKey = cacheConfig.getAverageMergeDurationByProject.key;
-                var cacheTTL = cacheConfig.getAverageMergeDurationByProject.TTL;
+                var cacheKey = cacheConfig[filter].getAverageMergeDurationByProject.key;
+                var cacheTTL = cacheConfig[filter].getAverageMergeDurationByProject.TTL;
 
                 if (isCached(cacheKey)) {
                     var cached = getCacheData(cacheKey);
@@ -326,9 +326,10 @@ var gerritDB = (function () {
                     });
                 }
             },
+
             "getAverageFirstReviewDurationByProject": function (callback) {
-                var cacheKey = cacheConfig.getAverageFirstReviewDurationByProject.key;
-                var cacheTTL = cacheConfig.getAverageFirstReviewDurationByProject.TTL;
+                var cacheKey = cacheConfig[filter].getAverageFirstReviewDurationByProject.key;
+                var cacheTTL = cacheConfig[filter].getAverageFirstReviewDurationByProject.TTL;
 
                 if (isCached(cacheKey)) {
                     var cached = getCacheData(cacheKey);
@@ -341,6 +342,7 @@ var gerritDB = (function () {
                     });
                 }
             },
+
             "getNumberOfCommits": function (callback) {
                 var cacheKey = cacheConfig[filter].numberOfCommits.key;
                 var cacheTTL = cacheConfig[filter].numberOfCommits.TTL;
