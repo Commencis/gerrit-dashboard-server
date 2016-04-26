@@ -30,11 +30,11 @@
         },
         "getAverageMergeDurationByProject": {
             "key": "24",
-            "TTL": 86400
+            "TTL": 3600
         },
         "getAverageFirstReviewDurationByProject": {
             "key": "25",
-            "TTL": 86400
+            "TTL": 3600
         }
     },
     "THIS_WEEK": {
