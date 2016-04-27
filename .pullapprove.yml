@@ -7,5 +7,6 @@ reviewers:
   members:
   - mustafaersahin
   - tunix
+  - lihorecoco
   name: default
   required: 1
