@@ -17,7 +17,7 @@ Distributed under the Apache License, Version 2.0
 Currently the only requirement is node.js itself. Server works with either gerrit's API or with direct DB
 connection. Though DB is default, this behaviour can be controlled with `SOURCE_TYPE` environment variable.
 
-* nodejs (>= 0.12)
+* nodejs (>= 4.4.1)
 * gerrit (>= 2.8, optional, for SOURCE_TYPE=API only)
 * gulp (optional, for packaging only)
 * docker (optional)

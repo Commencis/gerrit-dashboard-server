@@ -1,4 +1,4 @@
-FROM node
+FROM node:4.4
 LABEL type="node" purpose="api" role="core" description="Gerrit Dashboard Server"
 ENV NODE_ENV production
 ENV SOURCE_TYPE DB
