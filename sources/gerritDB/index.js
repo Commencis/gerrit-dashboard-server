@@ -8,6 +8,7 @@ var filterOptions = require("../../config/filter-options");
 var index = require("../../core/index");
 var cache = require("../cache");
 var util = require("../../util/index");
+var helpers = require("./helpers");
 
 var gerritDB = (function () {
     "use strict";
@@ -46,7 +47,8 @@ var gerritDB = (function () {
     function getTotalNumberOfProjects (callback) {
         var query =
             `SELECT COUNT(DISTINCT dest_project_name) AS count
-            FROM changes`;
+            FROM changes
+            WHERE ${helpers.injectExcludedProjectsIntoSql(filterOptions.EXCLUDED_PROJECTS)}`;
 
         doQuery("getTotalNumberOfProjects", query, function (queryResult) {
             callback(queryResult[0].count);
@@ -64,6 +66,7 @@ var gerritDB = (function () {
         var query =
             `SELECT COUNT(*) AS Count, status AS reviewType
             FROM changes
+            WHERE ${helpers.injectExcludedProjectsIntoSql(filterOptions.EXCLUDED_PROJECTS)}
             GROUP BY reviewType`;
 
         doQuery("getNumberOfReviews", query, function (queryResult) {
@@ -83,6 +86,7 @@ var gerritDB = (function () {
                     newReview = queryResult[reviewIndex].Count;
                 }
             }
+
             numberOfReviews.open = newReview + draftReview;
             numberOfReviews.merged = mergedReview;
             numberOfReviews.draft = draftReview;
@@ -96,9 +100,10 @@ var gerritDB = (function () {
         var filterDate = getFilterDate(filterOption);
         var query =
             `SELECT COUNT(change_key) AS numberOfCommits
-            FROM gerrit.changes
+            FROM changes
             WHERE changes.status != '${changeStatus.DRAFT}'
-                AND date_format(changes.created_on, '%Y-%m-%d') >= '${filterDate}'`;
+                AND date_format(changes.created_on, '%Y-%m-%d') >= '${filterDate}'
+                AND ${helpers.injectExcludedProjectsIntoSql(filterOptions.EXCLUDED_PROJECTS)}`;
 
         doQuery("getNumberOfCommits", query, function (queryResult) {
             callback(queryResult);
@@ -114,6 +119,7 @@ var gerritDB = (function () {
             FROM changes
             WHERE status != '${changeStatus.DRAFT}'
                 AND date_format(changes.created_on, '%Y-%m-%d') >= '${filterDate}'
+                AND ${helpers.injectExcludedProjectsIntoSql(filterOptions.EXCLUDED_PROJECTS)}
             GROUP BY name
             ORDER BY commits DESC`;
 
@@ -128,10 +134,11 @@ var gerritDB = (function () {
         var filterDate = getFilterDate(filterOption);
         var query =
             `SELECT full_name AS name, COUNT(change_key) AS commits
-            FROM  gerrit.accounts, gerrit.changes
+            FROM  accounts, changes
             WHERE changes.status != '${changeStatus.DRAFT}'
                 AND date_format(changes.created_on, '%Y-%m-%d') >= '${filterDate}'
                 AND changes.owner_account_id = accounts.account_id
+                AND ${helpers.injectExcludedProjectsIntoSql(filterOptions.EXCLUDED_PROJECTS)}
             GROUP BY name
             ORDER BY commits DESC`;
 
@@ -143,8 +150,9 @@ var gerritDB = (function () {
     function getAverageReviewInterval (callback) {
         var query =
             `SELECT created_on AS createdDate, last_updated_on AS updatedDate
-            FROM gerrit.changes
-            WHERE status = '${changeStatus.MERGED}'`;
+            FROM changes
+            WHERE status = '${changeStatus.MERGED}'
+                AND ${helpers.injectExcludedProjectsIntoSql(filterOptions.EXCLUDED_PROJECTS)}`;
 
         doQuery("getAverageReviewInterval", query, function (queryResult) {
             var average = 0;
@@ -182,7 +190,8 @@ var gerritDB = (function () {
                 INNER JOIN accounts ON patch_set_approvals.account_id = accounts.account_id
             WHERE DATE_FORMAT(patch_set_approvals.granted, '%Y-%m-%d') >= '${filterDate}'
                 AND patch_set_approvals.category_id = 'Code-Review'
-                AND changes.owner_account_id != accounts.account_id`;
+                AND changes.owner_account_id != accounts.account_id
+                AND ${helpers.injectExcludedProjectsIntoSql(filterOptions.EXCLUDED_PROJECTS)}`;
 
         doQuery("getTopReviewers", query, function (queryResult) {
             callback(queryResult);
@@ -194,8 +203,6 @@ var gerritDB = (function () {
      * MergeStatisticsView is responsible for finding the merge time related to patch.
      * Mathematical functions that used for calculating to best matching time duration between creation time
      * and first action time.
-     *
-     * TODO: Onboarding and other possible disallowed projects should be configurable.
      */
     function getAverageMergeDurationByProject (filterOption, callback) {
         var filterDate = getFilterDate(filterOption);
@@ -236,7 +243,7 @@ var gerritDB = (function () {
                     GROUP BY PatchSet.change_id,PatchSet.patch_set_id
                ) AS MergeStatisticsView
             ) ProjectMerge
-            WHERE Project NOT LIKE '%Onboarding%'
+            WHERE ${helpers.injectExcludedProjectsIntoSql(filterOptions.EXCLUDED_PROJECTS, "Project")}
             GROUP BY Project`;
 
         doQuery("getAverageMergeDurationByProject", query, function (queryResult) {
@@ -250,8 +257,6 @@ var gerritDB = (function () {
      * other reviewers(accounts except patchset owner and Jenkins accounts).
      * Mathematical functions that used for calculating to best matching time duration between creation time
      * and first action time.
-     *
-     * TODO: Onboarding and other possible disallowed projects should be configurable.
      */
     function getAverageFirstReviewDurationByProject (filterOption, callback) {
         var filterDate = getFilterDate(filterOption);
@@ -294,7 +299,7 @@ var gerritDB = (function () {
                     GROUP BY PatchSet.change_id,PatchSet.patch_set_id
                 ) AS FirstReviewActionTimeView
             ) ProjectReview
-            WHERE Project NOT LIKE '%Onboarding%'
+            WHERE ${helpers.injectExcludedProjectsIntoSql(filterOptions.EXCLUDED_PROJECTS, "Project")}
             GROUP BY Project`;
 
         doQuery("getAverageFirstReviewDurationByProject", query, function (queryResult) {
@@ -476,7 +481,6 @@ var gerritDB = (function () {
                     topReviewers = results.getTopReviewers.splice(0, limit);
                     avgMergeDurationByProject = results.getAverageMergeDurationByProject.slice(0, limit);
                     avgFirstReviewDurationByProject = results.getAverageFirstReviewDurationByProject.slice(0, limit);
-
                 } else {
                     numberOfCommits = results.getNumberOfCommits;
                     mostCommittedProjects = results.getMostCommittedProjects;
