@@ -1,6 +1,7 @@
 # Gerrit Dashboard Server
 
 ![Travis CI Build Status](https://travis-ci.org/monitise-mea/gerrit-dashboard-server.svg)
+[![](https://images.microbadger.com/badges/image/monitise/gerritdashboard-server.svg)](https://microbadger.com/images/monitise/gerritdashboard-server "Get your own image badge on microbadger.com")
 
 Gerrit Dashboard Server project that aggregates & serves metrics about the projects, reviews and commits with
 various filters.
